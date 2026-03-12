@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Digital Market Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Orbitron',sans-serif;background:#02030a;color:#e2e8f0}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:#01020a;border-bottom:1px solid #0f172a}
+.logo{font-size:24px;color:#22c55e;font-weight:600}
+nav a{color:#94a3b8;text-decoration:none;margin-left:20px;font-size:14px}
+.hero{text-align:center;padding:80px 20px;background:radial-gradient(circle at top,#0f172a,#02030a)}
+.hero h1{font-size:42px;color:#22c55e;margin-bottom:10px}
+.hero p{color:#94a3b8}
+.container{max-width:1200px;margin:auto;padding:40px 20px}
+.section-title{font-size:26px;margin-bottom:25px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:25px}
+.card{background:#030515;border:1px solid #0f172a;border-radius:12px;padding:20px;transition:.25s}
+.card:hover{transform:translateY(-6px);border-color:#22c55e;box-shadow:0 0 15px #22c55e22}
+.badge{background:#0f172a;font-size:11px;padding:5px 10px;border-radius:6px;display:inline-block;margin-bottom:10px}
+.price{font-size:20px;color:#22c55e;margin:10px 0}
+.btn{display:inline-block;padding:10px 18px;background:#22c55e;color:#02030a;text-decoration:none;border-radius:6px;font-size:13px;border:none;cursor:pointer}
+.btn:hover{background:#4ade80}
+.cart{position:fixed;right:20px;bottom:20px;background:#030515;border:1px solid #0f172a;border-radius:12px;padding:20px;width:260px}
+.cart h3{margin-top:0}
+.cart-item{font-size:13px;margin-bottom:6px}
+.panel{max-width:420px;margin:60px auto;background:#030515;border:1px solid #0f172a;padding:30px;border-radius:12px}
+.panel input{width:100%;padding:10px;margin:8px 0;background:#02030a;border:1px solid #1e293b;color:white;border-radius:6px}
+footer{text-align:center;padding:40px;color:#64748b;border-top:1px solid #0f172a;margin-top:60px}
+.modal{display:none;position:fixed;z-index:999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.85);justify-content:center;align-items:center}
+.modal-box{background:#030515;padding:30px;border-radius:12px;border:1px solid #0f172a;text-align:center}
+.modal img{width:220px;margin:15px 0}
+.close{margin-top:10px;background:#ef4444;color:white;padding:8px 14px;border:none;border-radius:6px;cursor:pointer}
+.admin{margin-top:60px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">DARK MARKET PRO</div>
+<nav>
+<a href="#market">Marketplace</a>
+<a href="#login">Login</a>
+<a href="#admin">Admin</a>
+</nav>
+</header>
+
+<section class="hero">
+<h1>Digital Marketplace</h1>
+<p>Platform jual beli produk digital</p>
+</section>
+
+<div class="container" id="market">
+<div class="section-title">Produk</div>
+<div class="grid" id="productList"></div>
+</div>
+
+<div class="panel" id="login">
+<h3>Login User</h3>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button class="btn" onclick="login()">Login</button>
+<p id="loginStatus"></p>
+</div>
+
+<div class="panel admin" id="admin">
+<h3>Admin Upload Produk</h3>
+<input id="pname" placeholder="Nama Produk">
+<input id="pprice" placeholder="Harga">
+<input id="pcat" placeholder="Kategori">
+<button class="btn" onclick="addProduct()">Tambah Produk</button>
+</div>
+
+<div class="cart">
+<h3>Keranjang</h3>
+<div id="cart-items"></div>
+<div id="total">Total: Rp0</div>
+<br>
+<button class="btn" onclick="checkout()">Checkout</button>
+</div>
+
+<div class="modal" id="qrModal">
+<div class="modal-box">
+<h3>Pembayaran QR</h3>
+<p>Scan QR untuk bayar</p>
+<img id="qrImg">
+<p id="payAmount"></p>
+<button class="close" onclick="closeQR()">Tutup</button>
+</div>
+</div>
+
+<footer>
+© 2026 Dark Digital Market
+</footer>
+
+<script>
+let products=JSON.parse(localStorage.getItem('products'))||[
+{name:'Automation Bot',price:150000,cat:'BOT'},
+{name:'Developer Tools Pack',price:200000,cat:'TOOLS'},
+{name:'Bot Setup Service',price:300000,cat:'SERVICE'}
+]
+
+let cart=[]
+
+function saveProducts(){
+localStorage.setItem('products',JSON.stringify(products))
+}
+
+function renderProducts(){
+let list=document.getElementById('productList')
+list.innerHTML=''
+products.forEach(p=>{
+let div=document.createElement('div')
+div.className='card'
+div.innerHTML=`<div class="badge">${p.cat}</div>
+<h3>${p.name}</h3>
+<div class="price">Rp${p.price.toLocaleString()}</div>
+<button class="btn">Tambah</button>`
+div.querySelector('button').onclick=()=>addToCart(p.name,p.price)
+list.appendChild(div)
+})
+}
+
+function addProduct(){
+let name=document.getElementById('pname').value
+let price=parseInt(document.getElementById('pprice').value)
+let cat=document.getElementById('pcat').value
+if(!name||!price)return
+products.push({name,price,cat})
+saveProducts()
+renderProducts()
+}
+
+function addToCart(name,price){
+cart.push({name,price})
+renderCart()
+}
+
+function renderCart(){
+let list=document.getElementById('cart-items')
+let total=0
+list.innerHTML=''
+cart.forEach(i=>{
+let div=document.createElement('div')
+div.className='cart-item'
+div.innerText=i.name+' - Rp'+i.price.toLocaleString()
+list.appendChild(div)
+total+=i.price
+})
+document.getElementById('total').innerText='Total: Rp'+total.toLocaleString()
+}
+
+function checkout(){
+if(cart.length==0){alert('Keranjang kosong');return}
+let total=cart.reduce((a,b)=>a+b.price,0)
+let qr=`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=PAYMENT-${total}`
+document.getElementById('qrImg').src=qr
+document.getElementById('payAmount').innerText='Total Bayar: Rp'+total.toLocaleString()
+document.getElementById('qrModal').style.display='flex'
+}
+
+function closeQR(){
+document.getElementById('qrModal').style.display='none'
+}
+
+function login(){
+let u=document.getElementById('user').value
+let p=document.getElementById('pass').value
+if(u==='admin'&&p==='admin123'){
+document.getElementById('loginStatus').innerText='Login berhasil (admin)'
+}else{
+document.getElementById('loginStatus').innerText='Login user berhasil'
+}
+}
+
+renderProducts()
+</script>
+
+</body>
+</html>
