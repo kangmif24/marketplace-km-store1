@@ -22,8 +22,17 @@ nav a{color:#94a3b8;text-decoration:none;margin-left:20px;font-size:14px}
 .price{font-size:20px;color:#22c55e;margin:10px 0}
 .btn{display:inline-block;padding:10px 18px;background:#22c55e;color:#02030a;text-decoration:none;border-radius:6px;font-size:13px;border:none;cursor:pointer}
 .btn:hover{background:#4ade80}
-.cart{position:fixed;right:20px;bottom:20px;background:#030515;border:1px solid #0f172a;border-radius:12px;padding:20px;width:260px}
-.cart h3{margin-top:0}
+..cart{
+position:fixed;
+bottom:15px;
+right:15px;
+background:#030515;
+padding:15px;
+border-radius:10px;
+width:200px;
+font-size:14px;
+}
+.cart h3{ma
 .cart-item{font-size:13px;margin-bottom:6px}
 .panel{max-width:420px;margin:60px auto;background:#030515;border:1px solid #0f172a;padding:30px;border-radius:12px}
 .panel input{width:100%;padding:10px;margin:8px 0;background:#02030a;border:1px solid #1e293b;color:white;border-radius:6px}
@@ -176,6 +185,7 @@ document.getElementById('loginStatus').innerText='Login user berhasil'
 
 renderProducts()
 </script>
+  <button onclick="toggleCart()" class="cart-btn">🛒</button>
 
 </body>
 </html>
